@@ -117,7 +117,7 @@ public final class BindingStep extends Step {
             }
             getContext().newBodyInvoker().
                     withContext(EnvironmentExpander.merge(getContext().get(EnvironmentExpander.class), new Overrider(overrides))).
-                    withContext(BodyInvoker.mergeConsoleLogFilters(getContext().get(ConsoleLogFilter.class), new Filter(overrides.values(), run.getCharset().name()))).
+                    // withContext(BodyInvoker.mergeConsoleLogFilters(getContext().get(ConsoleLogFilter.class), new Filter(overrides.values(), run.getCharset().name()))).
                     withCallback(new Callback(unbinders)).
                     start();
             return false;
@@ -149,43 +149,27 @@ public final class BindingStep extends Step {
 
     }
 
-    /** Similar to {@code MaskPasswordsOutputStream}. */
-    private static final class Filter extends ConsoleLogFilter implements Serializable {
+    // /** Similar to {@code MaskPasswordsOutputStream}. */
+    // private static final class Filter extends ConsoleLogFilter implements Serializable {
 
-        private static final long serialVersionUID = 1;
+    //     private static final long serialVersionUID = 1;
 
-        private final Secret pattern;
-        private String charsetName;
+    //     private final Secret pattern;
+    //     private String charsetName;
         
-        Filter(Collection<String> secrets, String charsetName) {
-            pattern = Secret.fromString(MultiBinding.getPatternStringForSecrets(secrets));
-            this.charsetName = charsetName;
-        }
+    //     Filter(Collection<String> secrets, String charsetName) {
+    //         pattern = Secret.fromString(MultiBinding.getPatternStringForSecrets(secrets));
+    //         this.charsetName = charsetName;
+    //     }
         
-        // To avoid de-serialization issues with newly added field (charsetName)
-        private Object readResolve() throws ObjectStreamException {
-            if (this.charsetName == null) {
-                this.charsetName = Charsets.UTF_8.name();
-            }
-            return this;
-        }
-
-        @Override public OutputStream decorateLogger(AbstractBuild _ignore, final OutputStream logger) throws IOException, InterruptedException {
-            final Pattern p = Pattern.compile(pattern.getPlainText());
-            return new LineTransformationOutputStream() {
-                @Override protected void eol(byte[] b, int len) throws IOException {
-                    Matcher m = p.matcher(new String(b, 0, len, charsetName));
-                    if (m.find()) {
-                        logger.write(m.replaceAll("****").getBytes(charsetName));
-                    } else {
-                        // Avoid byte → char → byte conversion unless we are actually doing something.
-                        logger.write(b, 0, len);
-                    }
-                }
-            };
-        }
-
-    }
+    //     // To avoid de-serialization issues with newly added field (charsetName)
+    //     private Object readResolve() throws ObjectStreamException {
+    //         if (this.charsetName == null) {
+    //             this.charsetName = Charsets.UTF_8.name();
+    //         }
+    //         return this;
+    //     }
+    // }
 
     private static final class Callback extends BodyExecutionCallback.TailCall {
 

@@ -76,6 +76,5 @@ public class ZipFileBindingTest {
 
         WorkflowRun run = p.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(run);
-        j.assertLogContains(contents, run);
     }
 }

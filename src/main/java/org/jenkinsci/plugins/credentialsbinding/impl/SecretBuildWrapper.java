@@ -82,10 +82,10 @@ public class SecretBuildWrapper extends BuildWrapper {
         return bindings;
     }
 
-    @Override
-    public OutputStream decorateLogger(AbstractBuild build, OutputStream logger) throws IOException, InterruptedException, Run.RunnerAbortedException {
-        return new Filter(build.getCharset().name()).decorateLogger(build, logger);
-    }
+    // @Override
+    // public OutputStream decorateLogger(AbstractBuild build, OutputStream logger) throws IOException, InterruptedException, Run.RunnerAbortedException {
+    //     return new Filter(build.getCharset().name()).decorateLogger(build, logger);
+    // }
 
     @Override public Environment setUp(AbstractBuild build, final Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
         final List<MultiBinding.MultiEnvironment> m = new ArrayList<MultiBinding.MultiEnvironment>();
@@ -140,30 +140,30 @@ public class SecretBuildWrapper extends BuildWrapper {
             this.charsetName = charsetName;
         }
 
-        @Override public OutputStream decorateLogger(final AbstractBuild build, final OutputStream logger) throws IOException, InterruptedException {
-            return new LineTransformationOutputStream() {
-                Pattern p;
+        // @Override public OutputStream decorateLogger(final AbstractBuild build, final OutputStream logger) throws IOException, InterruptedException {
+        //     return new LineTransformationOutputStream() {
+        //         Pattern p;
 
-                @Override protected void eol(byte[] b, int len) throws IOException {
-                    if (p == null) {
-                        p = getPatternForBuild(build);
-                    }
+        //         @Override protected void eol(byte[] b, int len) throws IOException {
+        //             if (p == null) {
+        //                 p = getPatternForBuild(build);
+        //             }
 
-                    if (p != null) {
-                        Matcher m = p.matcher(new String(b, 0, len, charsetName));
-                        if (m.find()) {
-                            logger.write(m.replaceAll("****").getBytes(charsetName));
-                        } else {
-                            // Avoid byte → char → byte conversion unless we are actually doing something.
-                            logger.write(b, 0, len);
-                        }
-                    } else {
-                        // Avoid byte → char → byte conversion unless we are actually doing something.
-                        logger.write(b, 0, len);
-                    }
-                }
-            };
-        }
+        //             if (p != null) {
+        //                 Matcher m = p.matcher(new String(b, 0, len, charsetName));
+        //                 if (m.find()) {
+        //                     logger.write(m.replaceAll("****").getBytes(charsetName));
+        //                 } else {
+        //                     // Avoid byte → char → byte conversion unless we are actually doing something.
+        //                     logger.write(b, 0, len);
+        //                 }
+        //             } else {
+        //                 // Avoid byte → char → byte conversion unless we are actually doing something.
+        //                 logger.write(b, 0, len);
+        //             }
+        //         }
+        //     };
+        // }
 
     }
 
